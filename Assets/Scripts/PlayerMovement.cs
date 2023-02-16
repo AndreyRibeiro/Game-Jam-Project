@@ -22,8 +22,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private TrailRenderer tr;
+    [SerializeField] private Animator anim;
 
 
+    private void Start() {
+
+        anim = GetComponent<Animator>();
+    }
     private void Update()
     {
         if (isDashing)
@@ -35,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+
         }
 
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
@@ -66,7 +72,8 @@ public class PlayerMovement : MonoBehaviour
                 doubleJump = !doubleJump;
             }
         }
-
+       
+        AnimationParameters();
         Flip();
     }
 
@@ -79,6 +86,19 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
     }
 
+    private void AnimationParameters()
+    {
+        //inicia animação de movimento
+        if(rb.velocity.x >= 1f || rb.velocity.x <= -1f)
+        {
+            anim.SetTrigger("Walking");
+        }
+        else
+        {
+             anim.SetTrigger("Idle");
+        }
+        
+    }
     private bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
@@ -96,7 +116,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private IEnumerator Dash()
-    {
+    {   
+        anim.SetBool("Dash", true);
         canDash = false;
         isDashing = true;
         float originalGravity = rb.gravityScale;
@@ -104,6 +125,7 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
         tr.emitting = true;
         yield return new WaitForSeconds(dashingTime);
+        anim.SetBool("Dash", false);
         tr.emitting = false;
         rb.gravityScale = originalGravity;
         isDashing = false;
