@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -18,6 +17,8 @@ public class PlayerMovement : MonoBehaviour
     private bool canDoubleJump;
     private bool doubleJump;
 
+    public Animator animator;
+
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
@@ -26,11 +27,13 @@ public class PlayerMovement : MonoBehaviour
 
 
     private void Start() {
-
         anim = GetComponent<Animator>();
     }
+
     private void Update()
     {
+        animator.SetFloat("Walking", Mathf.Abs(horizontal));
+
         if (isDashing)
         {
             return;
@@ -40,8 +43,17 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-
+            //animator.SetBool("Jumping", true);
         }
+        
+        //if(jumpingPower > 16f)
+        //{
+        //    anim.SetTrigger("Jumping");
+        //}
+        //else
+        //{
+        //    anim.SetBool("Jump", false);
+        //}
 
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
         {
@@ -68,12 +80,10 @@ public class PlayerMovement : MonoBehaviour
                 {
                     return;
                 }
-
                 doubleJump = !doubleJump;
             }
         }
-       
-        AnimationParameters();
+
         Flip();
     }
 
@@ -86,19 +96,6 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
     }
 
-    private void AnimationParameters()
-    {
-        //inicia animação de movimento
-        if(rb.velocity.x >= 1f || rb.velocity.x <= -1f)
-        {
-            anim.SetTrigger("Walking");
-        }
-        else
-        {
-             anim.SetTrigger("Idle");
-        }
-        
-    }
     private bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);

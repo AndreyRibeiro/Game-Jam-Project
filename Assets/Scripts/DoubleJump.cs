@@ -18,8 +18,6 @@ public class DoubleJump : MonoBehaviour
     {
         Instantiate(pickupEffect, transform.position, transform.rotation);
 
-
-
         Destroy(gameObject);
     }
 }
