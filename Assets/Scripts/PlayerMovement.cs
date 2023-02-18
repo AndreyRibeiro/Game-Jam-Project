@@ -32,29 +32,40 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        animator.SetFloat("Walking", Mathf.Abs(horizontal));
-
+        //Animações do personagem
+        if (Input.GetAxis("Horizontal") != 0)
+        {
+            animator.SetBool("isWalking", true);
+        }
+        else
+        {
+            animator.SetBool("isWalking", false);
+        }
+        if (Input.GetKey(KeyCode.Space))
+        {
+            animator.SetBool(("isJumping"), true);
+        }
+        else
+        {
+            animator.SetBool(("isJumping"), false);
+        }
         if (isDashing)
         {
+            animator.SetBool(("isDashing"), true);
             return;
         }
+        else
+        {
+            animator.SetBool(("isDashing"), false);
+        }
+
+        //Movimentação e PowerUps do Personagem
         horizontal = Input.GetAxisRaw("Horizontal");
 
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-            //animator.SetBool("Jumping", true);
         }
-        
-        //if(jumpingPower > 16f)
-        //{
-        //    anim.SetTrigger("Jumping");
-        //}
-        //else
-        //{
-        //    anim.SetBool("Jump", false);
-        //}
-
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
@@ -69,7 +80,6 @@ public class PlayerMovement : MonoBehaviour
         {
             doubleJump = false;
         }
-
         if (Input.GetButtonDown("Jump"))
         {
             if (IsGrounded() || doubleJump)
@@ -113,8 +123,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private IEnumerator Dash()
-    {   
-        anim.SetBool("Dash", true);
+    {
+        //Código pra fazer o dash funcionar
         canDash = false;
         isDashing = true;
         float originalGravity = rb.gravityScale;
@@ -122,7 +132,6 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
         tr.emitting = true;
         yield return new WaitForSeconds(dashingTime);
-        anim.SetBool("Dash", false);
         tr.emitting = false;
         rb.gravityScale = originalGravity;
         isDashing = false;
@@ -132,6 +141,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        //Fazer com que os PowerUps funcionem quando forem acionados
         if (collision.CompareTag("DoubleJump"))
         {
             canDoubleJump = true;
