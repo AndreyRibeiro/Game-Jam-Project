@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class PlayerMovement : MonoBehaviour
 {
     private float horizontal;
@@ -24,6 +24,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private TrailRenderer tr;
     [SerializeField] private Animator anim;
+    [SerializeField] private AudioSource jumpSound;
+    [SerializeField] private AudioSource dashSound;
+    [SerializeField] private AudioSource powerupSound;
 
 
     private void Start() {
@@ -43,6 +46,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.Space))
         {
+            jumpSound.Play();
             animator.SetBool(("isJumping"), true);
         }
         else
@@ -57,6 +61,10 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             animator.SetBool(("isDashing"), false);
+        }
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            SceneManager.LoadScene(0);
         }
 
         //Movimentação e PowerUps do Personagem
@@ -73,6 +81,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
+            dashSound.Play();
             StartCoroutine(Dash());
         }
 
@@ -93,7 +102,6 @@ public class PlayerMovement : MonoBehaviour
                 doubleJump = !doubleJump;
             }
         }
-
         Flip();
     }
 
@@ -122,6 +130,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+
     private IEnumerator Dash()
     {
         //Código pra fazer o dash funcionar
@@ -144,11 +153,17 @@ public class PlayerMovement : MonoBehaviour
         //Fazer com que os PowerUps funcionem quando forem acionados
         if (collision.CompareTag("DoubleJump"))
         {
+            powerupSound.Play();
             canDoubleJump = true;
         }
         if (collision.CompareTag("Dash"))
         {
+            powerupSound.Play();
             canDash = true;
+        }
+        if (collision.CompareTag("GameOver"))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 }

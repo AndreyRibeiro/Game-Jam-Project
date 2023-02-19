@@ -8,11 +8,12 @@ TagManager:
   - DoubleJump
   - Dash
   - Wall
+  - GameOver
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Background
   - Water
   - UI
   - Ground
@@ -42,6 +43,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 112719519
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
